@@ -1,0 +1,37 @@
+# Story development terminology collection
+
+- Story: Composed by many different parts
+  - Theme, setting, characters, plot + narration
+  - 2 major principles of story
+    - There are no criteria of good story, There are multiple ways to enjoy a story
+    - Story is a way to express the initial idea
+  - Story telling: Ways to communicate a story to the audience
+  - Theme: Holistic intent of a story
+    - premise, message, subject, etc.
+    - Story needs to have a fitting theme
+  - Setting: Where does the story take place
+    - Period, history, weather, etc.
+    - All background conditions, in-game story elements
+  - Characters: There to perform intentional action
+    - any agent part of the story
+  - Plot: sequence of events, the specification of each events
+    - Include important factor of before + set
+    - Only a subset of events are guaranteed / ensured to happen, the other are more like fillers
+  - Narration: The way which the story is told
+    - Chronology, cut scenes, voices, subjectivity of the telling
+    - Devices which help to communicate the story
+- Narrative: The subjective experience of the player
+  - The experience from playing the game
+  - Story focused experiences
+- Gameplay
+  - Clash between creating powerful narrative vs. creating challenges
+  - Game with heavy narrative should cut down on the challenge
+  - "The mental game space of the player contains a horizon of potential actions that allows for planning"
+    - mental game state: the game world from the player's perspective
+    - Horizon of potential actions: actions the player potentially want to do
+    - Allow for planning: Set some goal for the player depends on the action they perform
+- Immersion
+  - Sole attention on the same thing
+    - Measure how much attention the game gets from player
+  - How much of the mental model can we use to progress game's story
+  - Player's reaction to events

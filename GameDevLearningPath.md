@@ -16,5 +16,3 @@
 - Game Accessibility
 - Job searching: 
 - Script writing:
-Let's do some changes and see if I can upload changes from Ipad
-This is the edit done through the note app, I wanna make sure that this changes can also be pushes up

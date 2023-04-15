@@ -119,7 +119,7 @@
 	// could be interpreted either as
 	*beg = toupper(*beg); // left-hand evaluate first
 	*(beg + 1) = toupper(*beg); // right-hand evaluate first
-    ```
+  ```
 
 ### 4.6 The member access operators
 
@@ -184,4 +184,86 @@
 - 2 operands, left associative 
 	- Guarantee order of evaluation
 - Lowest precedence
-- evaluate and discard result, return the result of the last operands 
+- evaluate and discard result, return the result of the last operands
+
+### 4.11 Type conversions
+
+- 2 types are related if they can be converted to one and another
+- Implicit conversions: Automatic conversions, without programmer intervention
+  - Preserve precision if possible (int -> double)
+- Type of object initializing dominated the type
+
+##### When implicit conversions occur
+
+- Smaller integral type usually convert to larger integral type
+- non-bool convert to bool
+- Right hand operand convert to left hand operand
+- During function calls
+
+#### 4.11.1 Arithmetic conversions
+
+- Always the larger integral type
+- Always float > integral
+- bool, (signed / unsigned) char, (unsigned) short -> int if fit, otherwise -> unsigned int
+- In relational expressions / operator, convert to a common type
+  - Integral promotions happens first, if both have the same signedness, smaller type convert to larger type
+  - If signedness different, signed operand convert to unsigned if unsigned is the same or larger type
+  - Special case: signer operand is a larger type then the unsigned operand, machine dependent
+
+#### 4.11.2 Other implicit conversions
+
+- Array to pointer conversion: Array automatically convert to pointer, point to the first element in array
+  - Does not work with decltype, won't convert for sizeOf, typeid
+- Pointer conversions: constant int 0 + nullptr can convert to any pointer type
+  - Non const type can convert to void *, any pointer can convert to const void *
+- If pointer is 0 / arithmetic value = 0, convert to false, else convert to true
+- Conversion to const: any non const pointer + reference can convert to const pointer + reference
+- Conversion defined by class type
+
+#### 4.11.3 Explicit conversions
+
+- Use cast to explicit require conversions (dangerous operation)
+
+##### Named casts
+
+- ```c++
+  cast-name<type>(expression);//type = target type, expression = value to cast
+  ```
+
+###### Static_cast
+
+- Apart from low-level const, can convert any type conversion
+
+- ```c++
+  double answer = static_cast<double>(j) / n;
+  ```
+
+- Establish we are not concerned with loss of precession
+
+  - Turn off warning message of convert from large type to small type
+
+- Guarantee conversion: Covert any pointer to void * type, and convert back to original type later (What Unreal cast to use?)
+
+###### Const_cast
+
+- Change only low-level const, sed to modify the const-ness of an object
+  - Immutable object to be modified
+  - However, cast away the const and then modify the object might be undefined, compiler already decided the object to be const
+- Should only be used when modifying the object is safe
+- Used to overload function
+
+###### Reinterpret_cast
+
+- reinterpretation of the bit pattern of its operand, ask compiler to read the bit stored as different type
+- Used when working with low-level programming, interacting with hardware, raw memory or C libraries
+- Should not treat the casted pointer as the new type
+  - Machine dependent
+
+###### Old-style casts (legacy)
+
+- ```c++
+  type (expr);
+  (type) expr;
+  ```
+
+- Should not use, can be any types of cast above mentioned

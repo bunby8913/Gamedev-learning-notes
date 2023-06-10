@@ -128,5 +128,114 @@
 
 #### 13.1.5 Using "= default"
 
-- 
+- To explicit ask the compiler to use the synthesized version of the copy-control member
+
+  - ```c++
+    class class_Name
+    {
+        class_name() = default;
+    }
+    ```
+
+- Can also use to specify definition + operand overload
+
+#### 13.1.6 Preventing copies
+
+- There are cases where class needs to prevent copies + assignment from object
+  - i.e. The IO stream library
+
+##### Defining a function as deleted
+
+- Deleted function: Function declared to cannot be used
+
+- Define a function to be deleted by assigning the keyword "delete" to function
+
+  - ```c++
+    class_Name(const class_Name&) = delete;
+    ```
+
+- The "deleted" needs to be used to declare the function
+
+  - Compiler needs to know the deletion of the function to generate code
+
+##### The destructor should not be a deleted member
+
+- If destructor is "deleted", won't be anyway to destroy object of the type
+- Possible to create the object through dynamically allocation, however, cannot free the object
+
+##### The copy-control members may be synthesized as deleted
+
+- In certain situation, compiler will declare certain synthesized member as deleted
+  - If the destructors/copy constructor / copy-assignment operator is inaccessible / class contain deleted destructor member/deleted copy constructor/ copy-assignment operator
+  - default constructor is defined deleted if
+    - class has deleted / inaccessible destructor
+    - Reference member not initialized
+    - const member without default constructor + no in-class initializer
+
+##### "private" copy control
+
+- Copy constructor + copy-assignment operator can defined as private
+- If left blank, even friend class cannot access the copy control No code to implement
+  - Will likely result in compile time error
+- Similar effect as to set the function to be "delete"
+
+### 13.2 Copy control + resource management
+
+- Resource management: Classes that manage resources of objects in another class
+  - Must define copy-control members
+    - Need destructor to clean up resources allocated, therefore, will most likely also need
+- Copy the object either by value / pointer
+  - Copy by value copy creates separate state, values are independent from each other
+  - Copy by pointer shares the same address, Changes to the copy affect changes at original
+
+#### 13.2.1 Classes that act like values
+
+- Each object copies the resource the class manage
+  - Object requires the copy constructor to copies value instead of pointer
+  - Destructor to free the object
+  - Copy-assignment operator to free existing object + copy from right-hand
+
+##### Value-like copy-assignment operator
+
+- Assignment operator: usually function like destructor + copy constructor
+	- Ensure the sequence is correct for object assigned to self
+		- Usually create the new object + delete the current value / pointer address + re-assign pointer to a new location + return the object
+		- If delete the object first + using the assignment operator on self, pointer will point to a invalid / deleted address
+
+#### 13.2.2 Defining classes that act like pointers
+
+- Use “shared_ptr” to make class act like pointer when managing resource
+	- Don’t have to worry about freeing up the memory after using a “shared_ptr”
+		- Otherwise, require implementing a “reference count” to free memory after the last pointers goes away
+
+##### Reference counts
+
+- The class constructor creates a reference counter, keep track how many object share states with the object being created
+	- Initialize the counter to 1
+- Copy constructor copies data member of the object (include the counter)
+	- Every time the object is copied, increase the reference counter by 1
+- Destructor decrement the reference counter
+	- If the counter is 0, delete the state
+- Copy assignment operator increment counter on the right + decrement counter on the left
+	- If the left-hand object has counter of 0, destroy the state of the left-hand operand
+- Store the reference counter independent from the object, in dynamic memory
+	- When creating an object, allocate a new reference counter
+	- All object points to the same reference counter
+
+##### Pointerlike copy member “fiddle” the reference count
+
+- Destructor require conditional to delete reference data member
+	- Only decrement the reference counter if it’s not 0
+- Copy-assignment operator needs to handle self-assignment
+	- Increment the counter on the right hand side before decrement on the left hand side
+		- Handle the counter change before deciding if the reference should be deleted
+
+### 13.3 Swap
+
+- “swap”: A very important operation if classes needs to implement algorithms to re-order elements
+	- Use class-specific “swap” if defined, if not, use the “swap” function from library
+	- In many cases, “swap” operation could be performed on pointer level, swap the pointer between 2 objects
+		- Does not require memory allocation
+
+##### Writing our own “swap” function
 

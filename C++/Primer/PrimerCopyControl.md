@@ -237,5 +237,230 @@
 	- In many cases, “swap” operation could be performed on pointer level, swap the pointer between 2 objects
 		- Does not require memory allocation
 
-##### Writing our own “swap” function
+##### Writing custom "swap" function
 
+```c++
+class class_Name
+{
+    friend void swap (class_Name&, class_Name&);
+}
+
+inline void swap(class_Name& lhs, class_Name& rhs)
+{
+}
+```
+
+- The function should be a "friend" function to access private data member
+- The function should also be "inline", for optimization issue
+- Swap is not necessary to define, but an important optimization process
+
+##### Use "swap" over "std::swap"
+
+- For data member that are not built-in type + have custom "swap" function, should always call "swap" over "std::swap"
+  - Better match than the swap from the standard library
+
+##### Using "swap" in assignment operators
+
+- "swap" could be used to define assignment operator
+  - Copy + swap: Swap the left operand with a copy of right operand
+    - The right hand operand pass by values + constructed as a new object
+    - Perform a swap between the left hand operand's pointer with the new object's pointer
+    - Destroy the new copied object using its destructor
+- Automatically handle self assignment + exception safe
+
+### 13.5 Classes that manage dynamic memory
+
+- Class should usually built-in library to manage dynamic memory using a container
+	- However, in some case, classes need to perform custom allocation
+	- Needs to define a custom copy-control member to manage memory allocation
+
+Dynamic memory custom class design
+
+- The class needs to pre-allocate enough storage to hold some elements
+	- Every time a new elements are added, if enough space, construct a new object at the next available spot
+	- Else, find a new, bigger space in memory, move all existing elements to the new space + add the new elements
+- Use “allocator” to obtain raw memory
+	- Use “construct” to create object in allocated space
+	- Use “destroy” to remove member from the allocated memory
+- Requires 3 pointers to manage the memory
+	- “first”: points to the first element of the allocated memory
+	- “first_Free”: points to the first available allocated memory to place a element
+	- “caps”: Points to the end of the allocated memory (after the last element)
+- Class should have a static data member of “allocator<T>” to allocate
+	- A memory space factory available to all objects in class
+	- Will return a pointer to the first location of the allocated memory
+##### Using “construct”
+
+- The function which adds an element to the custom dynamic memory must first check if there are room for new element.
+  - Memory start as unconstructed
+- Takes at least2 arguments, first argument is a pointer to the first allocated, unconstructed space
+  - Remaining arguments determine what object will be constructed
+
+- Increment the first free space pointer to indicate a new element has been constructed
+
+##### Copy-control members
+
+- Perform custom copy-control requires 2 functions
+  - An "Allocate n copy" function, which takes a range of object, allocate dynamic memory for them + use "uninitialized_copy" to copy the element to the newly allocated memory + return the first + one past last pointer in a pair
+  - An "free" function, which first destroy all the stored objects from the memory + deallocate the entire memory block
+    - Ensure the memory is allocated with the "allocate" function + both pointers points to the same allocated memory
+- "Allocate n copy" should be called before "free" to protect self-assignment
+
+##### Moving, not copying element during reallocation
+
+- "string" have value like behavior
+  - When copy a "string", we generate a new "string", changes to the old "string" won't affect the new "string"
+- When "reallocate" copies of "strings", only 1 copy of the string will remain
+  - Should consider using "move" instead of "copy" to improve performance by avoiding allocating + deallocating overhead
+
+##### Move constructors + "std::move"
+
+- Many library class defines a "move constructor"
+  - Library guarantees that "moved from" string remain valid + destructible state
+- The "utility" header defines a "move" function
+  - Do not usually provide a using declaration for move, call with "std::move"
+
+### 13.6 Moving objects
+
+- Moving can provide significant performance boost over copy
+- IO / "unique_ptr" cannot be copied, but can be moved
+- Container type does not have to be copyable as long it is movable
+
+#### 13.6.1 R-value references ("&&")
+
+- A references that must be bound to a r-value
+  - Bound to an object about to be destroyed
+- L-value vs. R-value
+  - L-value: Object that occupies some identifiable location in memory
+  - R-value: Expression that cannot have a value assigned to it  
+    - Temporary object / literals
+- Cannot bind a R-value to a L-value reference (regular references)
+  - Cannot bind a L-value to a R-value reference
+
+##### L-value persist; R-value are ephemeral
+
+- R-value reference's object is about to be destroyed
+- R-value reference's object is unique
+- Code can "steal" state from the r-value reference, source object will be left in a empty / default state
+
+##### Variables are L-value
+
+- Variable expression are L-values
+  - Therefore, cannot bind a R-value reference to another R-value reference
+  - The right hand operand will become a L-value
+
+##### The library "move" function
+
+- Possible to cast an L-value to be a R-value reference type
+- Use the "move" function, returns a R-value reference to a given object
+  - Calling "move" on a object indicate that the object will not be used again (unless to be assigned / destroyed)
+  - Values on the moved-from object will be valid but unspecified
+  - After re-assign values to the object, the object can be used as normal
+
+#### 13.6.2 Move constructor + move assignment
+
+- Define a custom move constructor + move assignment operator to enable move operation to a custom classes
+  - Similar to the copy constructor, but steals data from the given object instead of copying
+- Move constructor's initial parameter is a R-value reference to the class type
+  - Additional parameter needs to have default arguments
+- Move constructor needs to handle leaving the moved-from object in a harmless state
+  - Remove all pointer to the moved resource
+- "noexcept": signal the constructor to not throw any exceptions
+- The move constructor does not allocate new memory, but transfer ownership over to another object
+  - The "moved-from" object continue to exist
+
+##### Move operations, library containers + exceptions
+
+- Move operation does not normally allocate resource -> usually will not throw a exceptions
+  - Add the "noexcept" keyword to save extra work from the library
+  - Specify the "noexpect" keyword right after the parameter list
+    - Between parameter list + construct initializer list in constructor
+- Needs to specify "noexpert" on declaration + definition if the function is used outside the class
+- Move operation usually don't throw exception, but is permitted to do so
+  - Library container guarantees actions when exception happens
+- Since the move operation changes the state of the moved-from object, throw exception will not usually meet the exception requirements
+  - Copy operation is free to throw exception since the original object is unchanged
+
+##### Move-assignment operator
+
+- Move-assignment operator  = destructor + move constructor
+  - Should also be set to "noexcept"
+- The move-assignment operator should implement logic for self-assignment
+  - Directly check if the left hand and right hand operand are the same
+    - If 2 objects are the same, move operation are not necessary
+- Otherwise, Free (deallocate) the memory of the left-hand side object + take over the memory address from the right hand object
+
+##### A moved-from object must be destructible
+
+- Needs to ensure after the move operation, the moved-from object is able to run the destructor
+  - Usually by setting pointer member to nullptr
+- The moved-from object must remain valid, safely to assign new value / used in other ways
+  - However, does not need to guarantee the validity of the remaining value on the moved-from object
+
+##### The synthesized move operations
+
+- The complier is able to synthesized move constructor + move-assignment operator for a class
+  - For copy constructor + copy-assignment operator, operations either define memberwise copy / assign object / deleted function
+- If a class defines copy constructor / copy-assignment operator / destructor, class will not synthesize move constructor + move-assignment operator
+  - When a class is missing move operations, use copy operation instead
+- Class will only generate synthesize move constructor / move-assignment operator if copy control members are not defines + every non-static data member can be moved
+  - Every data member either needs to be built-in type or the class type has move operations
+- Cannot set move operation explicitly to be deleted
+  - Operations are never implicitly set to "delete"
+  - If define the move operation explicitly using the "default" keyword, and move operation is not possible (If some of the members are not movable), the complier will treat the function as deleted
+  - Move operations is defined as deleted if class has member with copy constructor but not move constructor
+  - Move operations is deleted if a object's copy construction is deleted
+  - Move operation is deleted if destructor is not available
+  - Move operation is deleted if class has cost / reference member
+- If the class defines a move constructor  + move-assignment operator, synthesized copy operations will be deleted
+
+##### R-values are moved, L-value are copied (with move constructor)
+
+- Compiler use function matching to determine which constructor to use
+  - Depends on the argument type, if arguments are R-Value (non-const)
+
+- R-value are copied if there are no move constructor
+
+##### Copy + swap assignment operators + move
+
+- Move operations takes non-const parameter
+  - Needs to able to modify the moved-from object
+  - Move-assignment operator uses non-const, non-reference parameter
+    - Parameter is copy initialized
+    - Copied / moved depends on L/R-value
+    - Single operator acts for copy-assignment + move-assignment
+- Both copy + swap and move + swap utilize the "swap" operation between 2 operands
+  - The left hand-operand will holds a pointer to a object, destroyed when going out of scope
+- The rule of 3 really should be rule of 5, all 5 of them should be considered
+
+##### Move Iterators (make_move_iterator)
+
+- Adapt a given iterator to be able to iterate through deference operator
+  - Each pointed element is a R-value reference
+- Takes an iterator, return a R-value iterators
+  - This iterator can be used in generic algorithms, especially to provide a range of R-value
+- Compiler does not check if the algorithms can use move iterators
+  - Move operation also modify the source, no guarantee the algorithm will run correctly
+  - Developer needs to make sure algorithm does not access the same element twice
+- Use "std::move" only when move is guaranteed safe + move is necessary
+
+#### 13.6.3 R-value references + member functions
+
+- All member function can benefit from providing copy + move versions of the function
+  - Use the same parameters as the copy/move constructor + assignment operator
+    - Const L-value reference vs. non-const R-value
+  - The "move" member function is free to steal resources from the parameters
+
+##### R-value + L-value reference member functions
+
+- It's possible to a function on a object regardless if it's L-value / R-value
+  - Use a reference qualifier to indicate return of L-value
+  - Use 2 reference qualifier to indicate return of R-value reference
+  - Add the reference qualifier at the end of the function declaration + definition
+    - If the function has the reference qualifier, return a reference + L-value
+
+##### Overloading + reference functions
+
+- Possible to overload a function base on reference qualifier
+  - Depends on the object type, perform differently optimized function
+- If 2 function have the same name + same parameter list -> must have the same reference qualifier

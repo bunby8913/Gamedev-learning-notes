@@ -4,7 +4,7 @@
 
 - Encapsulation (data abstraction), inheritance, polymorphism (Dynamic binding)
 
-### 15.1 OOP: an overview
+### OOP: an overview
 
 - Data abstraction: separate interface + implementation
 
@@ -25,9 +25,9 @@
 - The version of the virtual function to run depends on the type of the object when called through reference + pointer to a base class
 - Decision which function to use is determined at run-time
 
-### 15.2 Defining base + derived classes
+### Defining base + derived classes
 
-#### 15.2.1 Defining a base class
+#### Defining a base class
 
 - By default, the destructor should be define as virtual
 
@@ -44,7 +44,7 @@
   - Can only be access within a class
 - For derived class to access members in base class + prohibit other class from access the member, use the "private" keyword
 
-#### 15.2.2 Defining a derived class
+#### Defining a derived class
 
 - Derived class can provide access specifier to each class it inherit from
   - If base class is "public", public members of the base class is also available to derived class
@@ -102,7 +102,7 @@
 - Use the "final" keyword to prevent a class from being inherited from
   - keyword applied after the class name
 
-#### 15.2.3 Conversions + inheritance
+#### Conversions + inheritance
 
 - Normally, reference / pointer can only be bind to the object of same type / const difference
   - Inherited object can be bind to the base-class type reference / pointer / smart pointers
@@ -174,7 +174,7 @@
 		- Base-class function are usually general purpose
 - If the scope operator is missing, function will call for derived virtual function, resolved at run-time, cause a infinite recursion
 
-### 15.4 Abstract base classes
+### Abstract base classes
 
 ##### Pure virtual functions
 
@@ -197,7 +197,7 @@
 	- Usually for better readability + easier to understand
 	- The operational code remain the same, but require a recompile
 
-### 15.5 Access control + inheritance
+### Access control + inheritance
 
 - Each base class controls the accessibility of data members in the derived class
 
@@ -243,7 +243,7 @@
 - By defaults, all class’s data member are “private”, all struct’s data member are “private”
 	- Should always explicitly specify “private” in class
 
-### 15.6 Class scope under inheritance
+### Class scope under inheritance
 
 - Each class it’s a separate scope
 	- Derived class is nested inside the scope of the base class
@@ -293,9 +293,9 @@
 	- Derived class only needs to define a selected overloaded virtual function + take inherited definition for the rest
 	- Overloaded functions must be accessible by the derived class
 
-### 15.7 Constructors + copy control
+### Constructors + copy control
 
-#### 15.7.1 Virtual destructors
+#### Virtual destructors
 
 - Each class control how object are created, copied, moved, assigned + destroyed
   - If not specified, compiler will synthesized (could be deleted function) for the class
@@ -310,7 +310,7 @@
 
 - If a class defines a destructor (virtual / explicitly defined as synthesized), compiler will not synthesized a move operator
 
-#### 15.7.2 Synthesized copy control + inheritance
+#### Synthesized copy control + inheritance
 
 - Synthesized copy control, constructor, assignment operator + destructor for base + derived class behave in similar fashion
   - In derived class, synthesized operations will directly call operations from the base class
@@ -330,7 +330,7 @@
   - Base class needs to explicitly define move constructor even to default (synthesized)
     - Must also explicitly define the copy control
 
-#### 15.7.3 Derived-class copy-control members
+#### Derived-class copy-control members
 
 - Copy / move operation must operate on the base part + new member from the derived class
 
@@ -359,7 +359,7 @@
 - Compiler treats constructor + destructor as they change the type of the object
   - Object will always be the same class as the constructor
 
-#### 15.7.4 Inherited constructors ("using")
+#### Inherited constructors ("using")
 
 - Derived class can use constructors from the base class
 
@@ -390,7 +390,7 @@
   - Constructor defined in the derived class with the argument list will not be inherited
   - copy, default + move constructor will not be inherited
 
-### 15.8 Containers + inheritance
+### Containers + inheritance
 
 - To use container to store object of inheritance hierarchy, should always store the object indirectly
   - Container cannot change type at runtime

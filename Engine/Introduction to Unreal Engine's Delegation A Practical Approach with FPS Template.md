@@ -84,7 +84,7 @@ Character->OnUseItem.RemoveDynamic(this, &UTP_WeaponComponent::Fire);
 
 ##### The "BP_Rifle" blueprint actor
 
-![Delegation_IMG](D:\Code\Gamedev-learning-notes\Engine\Delegation_IMG.png)
+![Delegation_IMG](Delegation_IMG.png)
 
 ​	The "BP_Rifle" creates a loose coupling relationship between the "Weapon_Component" and the "Pickup_Component" through composition. The blueprint function subscribes the "Attach weapon" function from the "Weapon_Component" to the delegate object on "Pickup_Component." An equivalent C++ code would be the following
 

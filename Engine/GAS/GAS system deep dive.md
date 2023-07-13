@@ -14,8 +14,6 @@
 	- If needs to be replicated, needs to explicitly set replication to be true
 - Gameplay tags are stored on the character
 
-##### 
-
 ### Gameplay tag delegate
 
 - ASC supports gameplay tag delegate
@@ -29,7 +27,6 @@
 ### Ability tasks
 
 - Ability task has a game-wide 1000 maximum concurrent ability task limit
-- 
 
 ### Gameplay cue
 

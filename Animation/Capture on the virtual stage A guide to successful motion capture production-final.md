@@ -22,7 +22,7 @@ The pre-production stage of a motion capture project is often overlooked. Howeve
 
 For the VR mock interview game, the level design needed to reflect the realistic and professional settings of the working space while maintaining the flexibility of adjustment based on the result of motion capture; some items need to be aligned precisely to enable further interactions between the animated character and in-game objects. In addition, finalizing the level design also helps me, the set builder, to visualize the physical interaction and spatial relationship between the character and the level, allowing me to re-construct the set quickly and precisely. In addition, knowing which part of the animation the player cannot see during gameplay is certainly an asset during production.
 
-![LevelDesign](LevelDesign.png)
+![LevelDesign](img/LevelDesign.png)
 
 ##### Create a comprehensive shot list
 
@@ -40,7 +40,7 @@ Apart from the basic project name, date and names of the participants, there are
 
 Here is a sample of the shot list I created for the shoot.
 
-![ShotListSamgle](ShotListSamgle.png)
+![ShotListSamgle](img/ShotListSamgle.png)
 
 ##### Rehearse with the actors 
 
@@ -52,7 +52,7 @@ Finally, as a side note, the optimum height of the actor for the system we are w
 
 Preparation is always the key, and practice makes perfect. It's crucial to set up the IK rig for the metahuman and practice the re-target process with animation from external animation libraries (Mixamo, in my case) as much as possible before the shoot. This can be a lifesaver, especially when you have dozens of animations that must be processed and something goes wrong. At least you know that once the problem has been resolved, it will take you no time to process the animations. In addition, I also had the animation blueprint for the Interviewer character setup ahead of time and the animation transition logic implemented and tested before the shoot. This way, once the animation has been processed, it can be plugged directly into the animation blueprint and ready to be used. 
 
-![AnimationBlueprint](AnimationBlueprint.png)
+![AnimationBlueprint](img/AnimationBlueprint.png)
 
 ### Filming day
 
@@ -72,7 +72,7 @@ As the director, I developed a few default positions for the actor, described th
 
 The actor is simply responsible for performing pre-assigned list of shot. They must have a strong visual imagination due to limits of the props, and are able to exaggerate their actions for clearer communication through body language in the game.
 
-![MoCapImg2](MoCapImg2.jpeg)
+![MoCapImg2](img/MoCapImg2.jpeg)
 
 As the actor, it is extremely important to stand still in T-pose until the capture camera has changes color and the director indicated "Actor ready". The T-pose at the start is used for the capture software to calibrate the character. If the actor was not in a up-right straight T-pose at the start, then the default position of the skeleton is not straight, and are extremely hard to align with new skeleton for re-targeting
 
@@ -82,7 +82,7 @@ The technicians are responsible for setting up, operating, and maintaining the M
 
 It is crucial for technicians to install the tracker correctly and to make sure that each trackers are detected correctly. If the tracker appeared to be twisted during the shoot, the technician should notify the director and ask the actor to walk out of the captured area and walk back slowly, to re-calibrate all the equipped trackers. 
 
-![MoCapImg](MoCapImg.jpeg)
+![MoCapImg](img/MoCapImg.jpeg)
 
 ### Processing, re-targeting integration of the animation
 
@@ -92,22 +92,22 @@ The process from receiving the raw motion-captured footage to seeing the animati
 
 One of the first issues I encountered after receiving the generated animation files was that they did not come with a default skeleton asset, which means the file cannot be directly imported to the Unreal engine for re-targeting. It's necessary to manually align and adapt a 3D skeleton structure with the motion capture data to each animation file. I selected the default Unreal Engine 4 mannequin, given its availability on the Internet as the target skeleton, and decided to perform the integration in Blender. However, this step was more complex than I expected.
 
-![BlenderInAction](BlenderInAction.png)
+![BlenderInAction](img/BlenderInAction.png)
 
 The success of the integration largely depends on the quality of the default "T-pose" maintained by the actor during the start of each motion capture shot. Suppose the actor fails to maintain a perfect upright T-pose; the animation's pose gets tilted, making it difficult to align with the skeleton mannequin. I learned this the hard way and wasted a lot of time aligning the skeleton with the tilted T-pose as best as possible. Thus, it is extremely important for the actor to stand perfectly straight-up T-pose initial calibration has been completed.
 
-![BlenderAllignment](BlenderAllignment.png)
+![BlenderAllignment](img/BlenderAllignment.png)
 
 #####  Re-target the animation
 
 Once the skeleton has been manually added, it is time to add the animation asset to the Unreal engine for re-targeting. From this point, the process became much smoother.
 In this step, I imported the Unreal Engine 4 skeleton model to the engine and created an IK rig for the UE4 mannequin and the metahuman skeleton mesh. Finally, I created an IK re-targeter that could effectively re-target animation from 1 skeleton to the other.
 
-![ManniIK](ManniIK.png)
+![ManniIK](img/ManniIK.png)
 
-![MetahumanIK](MetahumanIK.png)
+![MetahumanIK](img/MetahumanIK.png)
 
-![IkRetargeter](IkRetargeter.png)
+![IkRetargeter](img/IkRetargeter.png)
 
 While this step seems straightforward on the surface, the positional offset of each animation posed a new challenge. I had to manually adjust the animation positional offset for each animation in Blender to ensure that the characters' locations stayed relatively the same. This was a tedious task, and I'm sure utilizing the animation offset settings in the Unreal engine directly will be more efficient and could yield a better result.
 
@@ -115,7 +115,7 @@ While this step seems straightforward on the surface, the positional offset of e
 
 Finally, the animation is integrated into the game using the native animation blueprint system. I wrote a simple code segment using the character's state and character's frustration level to determine which animation to play. Again, having the animation blueprint and its transitional logic tested before the shoot could save you a lot of time and a lot of headaches.
 
-![AnimationStateCapture](AnimationStateCapture.png)
+![AnimationStateCapture](img/AnimationStateCapture.png)
 
 ### Conclusions
 

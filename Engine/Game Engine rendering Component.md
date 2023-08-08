@@ -353,16 +353,94 @@
 
 ###### Static lights
 
+- Light pre-calculation, calculated offline
+- Pre-computer Phong lighting reflection model, store as vertex color attributes
+	- Could be later translated into a light map, applied additionally to texture of objects
+		- Compare to baking light information directly into the textureUsing light map create more flexibility, ability to calculate light map for each light source separately + are easier to compress
+			- An hybrid between texture baking + light map could be considered
+	- However, static light is baked in to the level, does not change when the levels / lighting changes
+
 ###### Ambient lights
+
+- An universal lighting value applied to all objects in level
+	- Single color, scaled by surface ambient reflectivity at run-time
+	- Can be divided into regions, different regions might have different intensity + color
 
 ###### Directional lights
 
-###### Point lights
+- Light source that are infinite distance away from the surface
+	- All light rays are parallel in direction + does not have original starting location in level + usually are single color
+
+###### Point lights (omnidirectional)
+
+- Located in level, radiates uniformly in all direction
+	- Light falloff with square of distance from the light source
+	- Has a defined max length + clamp to 0 after the max distance
+	- has 3 variables, max distance, light color/intensity + world position
+	- Points light is only applied to object within the max distance
 
 ###### Spot lights
 
+- Located in level, the light is restricted to a cone-shaped region
+	- Define the cone with inner + outer angles
+		- Inner cone has full light intensity, intensity decal between inner + outer angles + intensity drops to 0 outside the outer cone
+		- The same light intensity distance fall off applies
+
 ###### Area lights
+
+- In real life, light source has non-zero area
+	- Create the illusion of area lights with casting multiple shadows + blur some of the sharp edges
 
 ###### Emissive objects
 
-502-516
+- Some materials can emit light + become light source
+	- Created using emissive texture map
+	- Texture with full light intensity even without light sources
+- Any emissive object can use combination of multiple light source + multiple techniques
+
+#### The virtual camera
+
+- An ideal focal point + rectangular virtual sensing surface (imaging rectangle)
+	- Imaging rectangle has multiple light censors, represent each pixel on screen.
+		- Every rendered frame determine color + intensity of each light censor (each pixel)
+
+##### View space
+
+- Camera focal point is the original in view space
+- Z-axis usually represent looking up / down, y-axis represent represent forward / back + x-axis represent left / right
+	- Z-axis determine how close the imaging plane is to the focal point
+- Camera position + rotation can be translated to the world space using a view-to-world matrix, similar to model-to-world matrix
+- Triangle mesh's model space -> world space -> view space (Using the world-to-view matrix), inverse V-T-W matrix
+- Model-to-view matrix can be pre-calculate the combination of world-to-view matrix, form a model-view matrix (in OpenGL) for faster calculation
+
+##### Projections
+
+- Render 3D scene onto 2D imaging plane
+- Perspective projection: mimics images produced by IRL camera, objects that are further appear smaller
+- Orthographic projection: Length preserving at any distance, usually provide the player with a different perspective + level design editing process
+
+##### The view volume + the frustum
+
+- View volume: The space the camera can see, defined by 6 planes
+	- Near plane: The imaging sensing surface
+	- Far plane: Used for rendering optimization, any object beyond the far plane will not be rendered
+	- 4 side planes: formed by connection the edges of near plane + far plane
+- Perspective projection's planes will form a pyramid shape (frustum)
+- Orthographic projection planes will form a rectangular prism
+- Planes can be represented with either plane normal + distance from origin / point plane on plane + plane normal
+
+##### Projection + homogeneous clip space
+
+- Homogeneous clip space: A warped version of view space, used to convert camera-space view volume to a canonical (standard) view volume
+	- Independent from aspect ratio + resolution + projection used
+	- Clip space ranges from (-1, 1) on all axis, a 2 unit cube
+
+- Convenient to clip triangles on the edge of the space
+- In the form of left hand axis system, Increase in Z-axis increase depth into the screen
+
+###### Perspective projection
+
+- The matrix used to perform transformation between view space -> homogeneous clip space
+- 
+
+509-516

@@ -192,5 +192,6 @@
 - Utilizing interface classes (Common in Java)
 	- Specify interface for derived classes, only contain a set of pure virtual function
 	- Use factory functions to construct derived classes, return smart pointer to dynamically created object
+	- Implementation are achieved in the derived classes, inherit interface from the interface class + implement the virtual function in the interface
 	- Additional memory cost + run time slow down
 
